@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: cloudflared
+resources:
+  - deployment.yaml
+  - externalsecret.yaml
+configMapGenerator:
+  # Le suffixe de hash redémarre les pods à chaque changement de config
+  - name: cloudflared-config
+    files:
+      - config.yaml

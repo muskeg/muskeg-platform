@@ -1,0 +1,10 @@
+# Hugo
+site/public/
+site/resources/_gen/
+.hugo_build.lock
+
+# Identifiants locaux, ne jamais committer
+kubeconfig*
+*.pem
+credentials*.json
+.env

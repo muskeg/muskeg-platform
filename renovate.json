@@ -1,0 +1,42 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "America/Toronto",
+  "argocd": {
+    "managerFilePatterns": ["/^clusters/.+\\.ya?ml$/"]
+  },
+  "kubernetes": {
+    "managerFilePatterns": ["/^(platform|apps)/.+\\.ya?ml$/"]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Manifestes de system-upgrade-controller téléchargés depuis les releases GitHub",
+      "managerFilePatterns": ["/^platform/system-upgrade/kustomization\\.yaml$/"],
+      "matchStrings": [
+        "https://github\\.com/(?<depName>rancher/system-upgrade-controller)/releases/download/(?<currentValue>v[^/]+)/"
+      ],
+      "datasourceTemplate": "github-releases"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Correctifs fusionnés automatiquement",
+      "matchUpdateTypes": ["patch", "digest"],
+      "automerge": true,
+      "ignoreTests": true
+    },
+    {
+      "description": "cloudflared publie une version par mois",
+      "matchPackageNames": ["cloudflare/cloudflared"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "ignoreTests": true
+    },
+    {
+      "description": "L'image du site est gérée par la CI",
+      "matchPackageNames": ["ghcr.io/muskeg/muskeg-site"],
+      "enabled": false
+    }
+  ]
+}

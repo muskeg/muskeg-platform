@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="{{ site.LanguageCode }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ site.Title }}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #1f2f3d; color: #e8eef4;
+           min-height: 100vh; margin: 0; display: grid; place-items: center; }
+    main { max-width: 40rem; padding: 2rem; }
+    h1 { color: #2bb3a3; font-size: 3rem; margin: 0 0 1rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>{{ .Title }}</h1>
+    {{ .Content }}
+  </main>
+</body>
+</html>

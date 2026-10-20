@@ -1,0 +1,4 @@
+baseURL = "https://muskeg.dev/"
+languageCode = "fr-ca"
+title = "muskeg"
+disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
