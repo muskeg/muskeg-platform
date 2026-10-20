@@ -8,4 +8,4 @@ resources:
 images:
   - name: ghcr.io/muskeg/muskeg-site
     # Mis à jour par .github/workflows/site.yml à chaque build
-    newTag: replaced-by-ci
+    newTag: sha-2c60271
