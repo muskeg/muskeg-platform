@@ -1,0 +1,17 @@
+# Les 3 nodes sont control plane et acceptent aussi les applications
+apiVersion: v1alpha1
+kind: Layer2VIPConfig
+name: 192.168.1.40
+link: net0
+---
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+certExtraSANs:
+  - 192.168.1.40
+  - k8s-api.home.muskegg.com
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+taints:
+  node-role.kubernetes.io/control-plane:
+    $patch: delete

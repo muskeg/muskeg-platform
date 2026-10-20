@@ -11,11 +11,10 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Manifestes de system-upgrade-controller téléchargés depuis les releases GitHub",
-      "managerFilePatterns": ["/^platform/system-upgrade/kustomization\\.yaml$/"],
-      "matchStrings": [
-        "https://github\\.com/(?<depName>rancher/system-upgrade-controller)/releases/download/(?<currentValue>v[^/]+)/"
-      ],
+      "description": "Version de Talos : la PR sert de rappel pour talosctl upgrade",
+      "managerFilePatterns": ["/^talos/talos\\.env$/"],
+      "matchStrings": ["TALOS_VERSION=(?<currentValue>v[^\\s]+)"],
+      "depNameTemplate": "siderolabs/talos",
       "datasourceTemplate": "github-releases"
     }
   ],
@@ -32,6 +31,11 @@
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "ignoreTests": true
+    },
+    {
+      "description": "Talos s'applique à la main avec talosctl : jamais de fusion automatique",
+      "matchPackageNames": ["siderolabs/talos"],
+      "automerge": false
     },
     {
       "description": "L'image du site est gérée par la CI",

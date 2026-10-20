@@ -7,7 +7,7 @@ no-autoupdate: true
 ingress:
   # Toujours en HTTPS vérifié vers Traefik, jamais de noTLSVerify
   - hostname: "*.muskeg.dev"
-    service: https://traefik.kube-system.svc.cluster.local:443
+    service: https://traefik.traefik.svc.cluster.local:443
     originRequest:
       originServerName: muskeg.dev
   # À la bascule, ajouter l'apex muskeg.dev avec la même destination

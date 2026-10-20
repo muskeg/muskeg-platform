@@ -1,0 +1,13 @@
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: shokunin1
+auto: off
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: net0
+addresses:
+  - address: 192.168.1.41/24
+routes:
+  # À vérifier : passerelle du LAN
+  - gateway: 192.168.1.1

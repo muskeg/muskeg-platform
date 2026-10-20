@@ -1,0 +1,13 @@
+# Commun aux 3 nodes
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: net0
+selector:
+  # Une seule carte réseau virtio par VM
+  match: link.driver == "virtio_net"
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers:
+  # À vérifier : routeur / Pi-hole du LAN
+  - address: 192.168.1.1

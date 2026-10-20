@@ -1,0 +1,27 @@
+# Un pod par node, exposé sur les ports 80/443 de chaque node pour le LAN
+deployment:
+  kind: DaemonSet
+
+ports:
+  web:
+    hostPort: 80
+  websecure:
+    hostPort: 443
+
+# cloudflared passe par le service interne
+service:
+  type: ClusterIP
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+
+providers:
+  kubernetesCRD:
+    enabled: true
+  kubernetesIngress:
+    enabled: true
+
+resources:
+  requests: { cpu: 25m, memory: 48Mi }
+  limits: { memory: 160Mi }

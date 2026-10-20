@@ -3,7 +3,10 @@ site/public/
 site/resources/_gen/
 .hugo_build.lock
 
-# Identifiants locaux, ne jamais committer
+# Identifiants locaux, ne jamais committer (secrets.yaml et talosconfig vont dans 1Password)
+_out/
+secrets.yaml
+talosconfig
 kubeconfig*
 *.pem
 credentials*.json
