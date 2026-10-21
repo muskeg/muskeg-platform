@@ -66,7 +66,11 @@ apply() {
 
 bootstrap() {
   require talosctl kubectl
-  talosctl bootstrap --nodes "${NODES[0]}"
+  local out
+  if ! out="$(talosctl bootstrap --nodes "${NODES[0]}" 2>&1)"; then
+    grep -q AlreadyExists <<<"$out" || { echo "$out" >&2; exit 1; }
+    echo "etcd déjà initialisé, on continue."
+  fi
   talosctl health --nodes "${NODES[0]}" --wait-timeout 15m
   talosctl kubeconfig --nodes "${NODES[0]}" --force
   kubectl get nodes -o wide
