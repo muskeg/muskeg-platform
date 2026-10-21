@@ -1,0 +1,11 @@
+- company: GoTo
+  role: DevOps engineering, platform team
+  tags: [Kubernetes, Go operators, Argo CD, GitHub Actions, Jenkins, Terraform, AWS, OCI, HashiCorp Vault, Observability, AI dev tooling]
+
+- company: Framestore
+  role: Senior systems administrator, VFX
+  tags: [Linux, Puppet, Large-scale storage, Render farm, VPLS, Switches & firewalls]
+
+- company: Moment Factory
+  role: Senior systems administrator, immersive entertainment
+  tags: [Ansible, ZFS, LTO archiving, VMware, Software-defined networking, Firewalls & VPN, Active Directory]

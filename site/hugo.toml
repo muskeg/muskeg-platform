@@ -1,4 +1,10 @@
 baseURL = "https://muskeg.dev/"
-languageCode = "fr-ca"
-title = "muskeg"
+locale = "en-ca"
+title = "muskeg.dev"
 disableKinds = ["taxonomy", "term", "RSS", "sitemap"]
+
+[params]
+  description = "Raphael Lanouette: DevOps engineering manager, platform builder and homelab tinkerer in Montreal."
+  email = "raph@muskeg.dev"
+  linkedin = "https://www.linkedin.com/in/rlanouette"
+  github = "https://github.com/muskeg"

@@ -22,7 +22,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: raphael.lanouette@gmail.com
+    email: raph@muskeg.dev
     privateKeySecretRef:
       name: letsencrypt-account-key
     solvers:

@@ -1,0 +1,44 @@
+- name: muskeg-platform
+  repo: muskeg/muskeg-platform
+  description: The GitOps homelab running this website. Talos Linux, Argo CD, Traefik, cert-manager, External Secrets and a Cloudflare Tunnel, all declared in Git.
+  tags: [Kubernetes, GitOps, Talos]
+
+- name: simple3d
+  repo: muskeg/simple3d
+  description: A simple 3D geometry generator with basic text embossing and extruding.
+  tags: [JavaScript, 3D]
+
+- name: watch-dial
+  repo: muskeg/watch-dial
+  description: A watch face template maker.
+  tags: [TypeScript]
+
+- name: kanji-renshuu
+  repo: muskeg/kanji-renshuu
+  description: Kanji flashcards, because 日本語 doesn't learn itself.
+  tags: [TypeScript, Japanese]
+
+- name: konnichiwa
+  repo: muskeg/konnichiwa
+  description: Hello World project for an ESP32-driven LED matrix.
+  tags: [C, ESP32]
+
+- name: quote-api
+  repo: muskeg/quote-api
+  description: A basic example quotes API written in Go.
+  tags: [Go, API]
+
+- name: PRTG-Solaris-ZFS-Health
+  repo: muskeg/PRTG-Solaris-ZFS-Health
+  description: A PRTG SSH sensor that monitors the health of ZFS pools.
+  tags: [Python, ZFS, Monitoring]
+
+- name: cloudflare-dyndns
+  repo: muskeg/cloudflare-dyndns
+  description: A small dynamic DNS updater for Cloudflare records.
+  tags: [Python, DNS]
+
+- name: wg-conf-update
+  repo: muskeg/wg-conf-update
+  description: Keeps a WireGuard config up to date for endpoints with dynamic IP addresses.
+  tags: [Python, WireGuard]

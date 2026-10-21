@@ -1,20 +1,142 @@
 <!DOCTYPE html>
-<html lang="{{ site.LanguageCode }}">
+<html lang="{{ site.Language.Locale }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ site.Title }}</title>
-  <style>
-    body { font-family: system-ui, sans-serif; background: #1f2f3d; color: #e8eef4;
-           min-height: 100vh; margin: 0; display: grid; place-items: center; }
-    main { max-width: 40rem; padding: 2rem; }
-    h1 { color: #2bb3a3; font-size: 3rem; margin: 0 0 1rem; }
-  </style>
+  <meta name="description" content="{{ site.Params.description }}">
+  <meta name="theme-color" content="#1c2e35">
+  <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#383838">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind:wght@300;500;700&display=swap" rel="stylesheet">
+  {{ $css := resources.Get "css/site.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 </head>
 <body>
+  <header id="header">
+    <a id="header_title" href="#top">muskeg.dev</a>
+    <nav>
+      <a href="#platform">platform</a>
+      <a href="#raph">me</a>
+      <a href="#projects">projects</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </header>
+
+  <div id="top" class="intro">
+    <p>{{ .Params.tagline }}</p>
+  </div>
+
   <main>
-    <h1>{{ .Title }}</h1>
-    {{ .Content }}
+    <section class="section light" id="platform">
+      <div class="wrap">
+        <h1>this website</h1>
+        {{ .Params.platform | markdownify }}
+
+        <h2>how a change ships</h2>
+        <ol class="flow">
+          <li><b>git push</b><span>to GitHub</span></li>
+          <li><b>GitHub Actions</b><span>builds the Hugo site into an image</span></li>
+          <li><b>GHCR</b><span>stores the image</span></li>
+          <li><b>commit</b><span>the new image tag lands back in Git</span></li>
+          <li><b>Argo CD</b><span>sees the change and syncs the cluster</span></li>
+        </ol>
+
+        <h2>how a request gets here</h2>
+        <ol class="flow">
+          <li><b>you</b><span>ask for muskeg.dev</span></li>
+          <li><b>Cloudflare</b><span>edge and DNS</span></li>
+          <li><b>Cloudflare Tunnel</b><span>outbound-only connection from the cluster</span></li>
+          <li><b>Traefik</b><span>verified TLS with a cert-manager wildcard</span></li>
+          <li><b>NGINX</b><span>serves this page</span></li>
+        </ol>
+
+        <h2>under the hood</h2>
+        <ul class="stack">
+          <li><b>Talos Linux</b> three control-plane VMs on Proxmox, sharing a virtual IP. No SSH, no shell, managed through an API.</li>
+          <li><b>Argo CD</b> manages everything, including itself, through an app-of-apps.</li>
+          <li><b>External Secrets</b> pulls credentials from 1Password, so no secret ever lives in Git.</li>
+          <li><b>Renovate</b> opens pull requests when charts and images have new versions.</li>
+        </ul>
+
+        <h2>then and now</h2>
+        <table class="then-now">
+          <thead><tr><th></th><th>2020</th><th>today</th></tr></thead>
+          <tbody>
+            {{ range .Params.then_now }}
+            <tr><th>{{ index . 0 }}</th><td>{{ index . 1 }}</td><td>{{ index . 2 }}</td></tr>
+            {{ end }}
+          </tbody>
+        </table>
+
+        <p class="source">The whole platform is public: <a href="https://github.com/muskeg/muskeg-platform">github.com/muskeg/muskeg-platform</a></p>
+      </div>
+    </section>
+
+    <section class="section blue" id="raph">
+      <div class="wrap">
+        <h1>muskeg</h1>
+        {{ .Params.muskeg | markdownify }}
+
+        <h2>about me</h2>
+        <div class="about">
+          <img class="portrait" src="/img/raph.jpg" alt="Raphael Lanouette" width="300" height="300">
+          {{ .Params.about | markdownify }}
+        </div>
+
+        <h2>experience</h2>
+        <div class="jobs">
+          {{ range hugo.Data.experience }}
+          <div class="job">
+            <b>{{ .company }}</b>
+            <span>{{ .role }}</span>
+            <span class="tags">{{ range .tags }}<i>{{ . }}</i>{{ end }}</span>
+          </div>
+          {{ end }}
+        </div>
+      </div>
+    </section>
+
+    <section class="section light" id="projects">
+      <div class="wrap">
+        <h1>projects</h1>
+        <p>Side projects, experiments and small tools. Some useful, some just for fun.</p>
+        <div class="cards">
+          {{ range hugo.Data.projects }}
+          <a class="card" href="https://github.com/{{ .repo }}">
+            <b>{{ .name }}</b>
+            <span>{{ .description }}</span>
+            <span class="tags">{{ range .tags }}<i>{{ . }}</i>{{ end }}</span>
+          </a>
+          {{ end }}
+        </div>
+        <p class="source">More on GitHub: <a href="{{ site.Params.github }}">github.com/muskeg</a></p>
+      </div>
+    </section>
+
+    <section class="section blue" id="contact">
+      <div class="wrap">
+        <h1>contact</h1>
+        <ul class="contact">
+          <li><a href="mailto:{{ site.Params.email }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>{{ site.Params.email }}</a></li>
+          <li><a href="{{ site.Params.linkedin }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8.3 18.3H5.7V9.7h2.6v8.6zM7 8.6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm11.3 9.7h-2.6v-4.2c0-1 0-2.3-1.4-2.3s-1.6 1.1-1.6 2.2v4.3h-2.6V9.7h2.5v1.2c.4-.7 1.2-1.4 2.5-1.4 2.7 0 3.2 1.8 3.2 4.1v4.7z"/></svg>linkedin.com/in/rlanouette</a></li>
+          <li><a href="{{ site.Params.github }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>github.com/muskeg</a></li>
+        </ul>
+      </div>
+    </section>
   </main>
+
+  <footer>&copy;{{ now.Year }} Raphael Lanouette</footer>
+
+  <script>
+    const header = document.getElementById("header");
+    const onScroll = () => header.classList.toggle("solid", window.scrollY > window.innerHeight * 0.025);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  </script>
 </body>
 </html>
