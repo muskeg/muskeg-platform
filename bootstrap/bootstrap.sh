@@ -84,8 +84,9 @@ platform() {
   if ! kubectl -n external-secrets get secret onepassword-token >/dev/null 2>&1; then
     read -rsp "Jeton du compte de service 1Password : " OP_TOKEN
     echo
-    kubectl -n external-secrets create secret generic onepassword-token \
-      --from-file=token=/dev/stdin <<<"$OP_TOKEN"
+    # printf plutôt que <<< : pas de saut de ligne ajouté au jeton
+    printf '%s' "$OP_TOKEN" | kubectl -n external-secrets create secret generic onepassword-token \
+      --from-file=token=/dev/stdin
     unset OP_TOKEN
   fi
 
