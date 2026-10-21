@@ -7,8 +7,23 @@ webhook:
   resources:
     requests: { cpu: 10m, memory: 32Mi }
     limits: { memory: 96Mi }
+  # cert-manager gère le certificat du webhook ; le cert-controller d'ESO brûlait ~1 CPU en continu
+  certManager:
+    enabled: true
+    cert:
+      issuerRef:
+        group: cert-manager.io
+        kind: Issuer
+        name: external-secrets-selfsigned
 
 certController:
-  resources:
-    requests: { cpu: 10m, memory: 32Mi }
-    limits: { memory: 96Mi }
+  create: false
+
+extraObjects:
+  - apiVersion: cert-manager.io/v1
+    kind: Issuer
+    metadata:
+      name: external-secrets-selfsigned
+      namespace: external-secrets
+    spec:
+      selfSigned: {}

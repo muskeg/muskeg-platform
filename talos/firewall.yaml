@@ -1,6 +1,7 @@
-# Pare-feu des nodes, appliqué APRÈS que le cluster fonctionne :
-#   talosctl -n 192.168.1.41,192.168.1.42,192.168.1.43 patch mc --mode=try --patch @talos/firewall.yaml
-# --mode=try annule le changement après 1 minute si on perd l'accès.
+# Pare-feu des nodes, appliqué APRÈS que le cluster fonctionne.
+# --mode=try annule TOUJOURS à la fin du délai : tester, puis réappliquer sans --mode=try pour le garder.
+#   talosctl -n <ip> patch mc --mode=try --timeout 5m --patch @talos/firewall.yaml
+#   talosctl -n <ip> patch mc --patch @talos/firewall.yaml
 apiVersion: v1alpha1
 kind: NetworkDefaultActionConfig
 ingress: block
@@ -41,9 +42,8 @@ portSelector:
   ports: [50001, 10250, 2379-2380]
   protocol: tcp
 ingress:
-  - subnet: 192.168.1.41/32
-  - subnet: 192.168.1.42/32
-  - subnet: 192.168.1.43/32
+  # .40 (VIP) à .43
+  - subnet: 192.168.1.40/30
 ---
 apiVersion: v1alpha1
 kind: NetworkRuleConfig
@@ -52,6 +52,23 @@ portSelector:
   ports: [4789]
   protocol: udp
 ingress:
-  - subnet: 192.168.1.41/32
-  - subnet: 192.168.1.42/32
-  - subnet: 192.168.1.43/32
+  - subnet: 192.168.1.40/30
+---
+# CoreDNS transfère vers le DNS de l'hôte Talos (169.254.116.108)
+apiVersion: v1alpha1
+kind: NetworkRuleConfig
+name: host-dns-udp
+portSelector:
+  ports: [53]
+  protocol: udp
+ingress:
+  - subnet: 10.244.0.0/16
+---
+apiVersion: v1alpha1
+kind: NetworkRuleConfig
+name: host-dns-tcp
+portSelector:
+  ports: [53]
+  protocol: tcp
+ingress:
+  - subnet: 10.244.0.0/16

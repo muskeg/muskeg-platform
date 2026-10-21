@@ -4,7 +4,8 @@ metadata:
   name: cert-manager
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-3"
+    # Avant external-secrets, dont le webhook utilise un Certificate
+    argocd.argoproj.io/sync-wave: "-4"
 spec:
   project: default
   sources:
