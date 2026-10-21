@@ -1,6 +1,7 @@
+# Le SDK 1Password dépasse 160 Mi dès le démarrage
 resources:
-  requests: { cpu: 10m, memory: 64Mi }
-  limits: { memory: 160Mi }
+  requests: { cpu: 10m, memory: 192Mi }
+  limits: { memory: 512Mi }
 
 webhook:
   resources:
