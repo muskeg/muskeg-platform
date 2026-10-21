@@ -1,5 +1,5 @@
 # ID du tunnel muskeg-platform (public : il apparaît déjà dans le CNAME DNS)
-tunnel: 70628918-61c1-42c9-9d96-d885db96e136
+tunnel: b9946c2a-478d-4b59-bef1-c846a6a6d11c
 credentials-file: /etc/cloudflared/creds/credentials.json
 metrics: 0.0.0.0:2000
 no-autoupdate: true
