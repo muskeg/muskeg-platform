@@ -21,6 +21,12 @@ providers:
     enabled: true
   kubernetesIngress:
     enabled: true
+    # Le service ClusterIP n'a pas d'adresse à publier ; on publie l'IP virtuelle du LAN
+    publishedService:
+      enabled: false
+
+additionalArguments:
+  - --providers.kubernetesingress.ingressendpoint.ip=192.168.1.40
 
 resources:
   requests: { cpu: 25m, memory: 48Mi }
