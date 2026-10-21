@@ -2,6 +2,13 @@
 deployment:
   kind: DaemonSet
 
+# Avec hostPort, un nouveau pod ne peut pas coexister avec l'ancien sur le même node
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+
 ports:
   web:
     hostPort: 80
