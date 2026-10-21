@@ -9,6 +9,16 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
+    - host: muskeg.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: site
+                port:
+                  name: http
     - host: beta.muskeg.dev
       http:
         paths:
