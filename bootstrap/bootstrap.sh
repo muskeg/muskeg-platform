@@ -10,7 +10,8 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="$REPO_ROOT/_out"
 # shellcheck source=../talos/talos.env
-source "$REPO_ROOT/talos/talos.env"
+# tr retire les CRLF si le fichier a été édité sous Windows
+source <(tr -d '\r' < "$REPO_ROOT/talos/talos.env")
 export TALOSCONFIG="$OUT/talosconfig"
 
 NODES=(192.168.1.41 192.168.1.42 192.168.1.43)
