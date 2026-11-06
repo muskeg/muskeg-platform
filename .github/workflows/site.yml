@@ -33,15 +33,35 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build et publication de l'image
+      - name: Build de l'image
         run: |
           TAG="sha-${GITHUB_SHA::7}"
           docker buildx build site \
+            --pull \
             --platform linux/amd64 \
             --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
             --tag "${IMAGE}:${TAG}" \
-            --push
+            --load
           echo "TAG=${TAG}" >> "$GITHUB_ENV"
+
+      # Sans serveur OpenSSH, le contournement d'authentification musl ne s'applique pas.
+      - name: Vérification de l'absence de serveur OpenSSH
+        run: |
+          docker run --rm --entrypoint /bin/sh "${IMAGE}:${TAG}" -ec '
+            if ! command -v apk >/dev/null; then
+              echo "Erreur : apk absent, contrôle des paquets impossible." >&2
+              exit 1
+            fi
+            if apk info --installed openssh-server \
+              || command -v sshd >/dev/null 2>&1 \
+              || [ -e /usr/sbin/sshd ]; then
+              echo "Erreur : serveur OpenSSH présent dans cette image finale." >&2
+              exit 1
+            fi
+          '
+
+      - name: Publication de l'image vérifiée
+        run: docker push "${IMAGE}:${TAG}"
 
       # Le déploiement est un commit : Argo CD s'occupe du reste
       - name: Mise à jour du tag dans Git
