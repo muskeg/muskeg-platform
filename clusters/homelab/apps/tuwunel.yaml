@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: dendrite
+  name: tuwunel
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -10,10 +10,10 @@ spec:
   source:
     repoURL: https://github.com/muskeg/muskeg-platform.git
     targetRevision: main
-    path: apps/dendrite
+    path: apps/tuwunel
   destination:
     server: https://kubernetes.default.svc
-    namespace: dendrite
+    namespace: tuwunel
   syncPolicy:
     automated:
       prune: true

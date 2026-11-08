@@ -46,6 +46,7 @@ config() {
     --with-secrets "$OUT/secrets.yaml" \
     --install-image "factory.talos.dev/metal-installer/${schematic_id}:${TALOS_VERSION}" \
     --config-patch @"$REPO_ROOT/talos/patches/all.yaml" \
+    --config-patch @"$REPO_ROOT/talos/patches/local-storage.yaml" \
     --config-patch-control-plane @"$REPO_ROOT/talos/patches/controlplane.yaml" \
     --output-types controlplane,talosconfig \
     --output "$OUT" --force
