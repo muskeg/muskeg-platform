@@ -1,0 +1,94 @@
+name: muskeg-matrix-rtc
+services:
+  livekit:
+    image: livekit/livekit-server:v1.13.11
+    network_mode: host
+    command: ["--config", "/etc/livekit.yaml", "--key-file", "/run/rtc-secrets/livekit-keys.yaml"]
+    restart: unless-stopped
+    stop_grace_period: 2m
+    user: "10001:10001"
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 2g
+    volumes:
+      - type: bind
+        source: ./livekit.yaml
+        target: /etc/livekit.yaml
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: Z
+      - type: bind
+        source: ./secrets
+        target: /run/rtc-secrets
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: z
+    tmpfs:
+      - /tmp:uid=10001,gid=10001,mode=1770
+
+  jwt:
+    image: ghcr.io/element-hq/lk-jwt-service:0.9.0
+    network_mode: host
+    environment:
+      LIVEKIT_JWT_BIND: "127.0.0.1:8081"
+      LIVEKIT_URL: "wss://rtc.muskeg.dev/livekit"
+      LIVEKIT_KEY_FILE: /run/rtc-secrets/livekit-keys.yaml
+      LIVEKIT_FULL_ACCESS_HOMESERVERS: matrix.muskeg.dev
+    restart: unless-stopped
+    depends_on:
+      - livekit
+    user: "10001:10001"
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    volumes:
+      - type: bind
+        source: ./secrets
+        target: /run/rtc-secrets
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: z
+    tmpfs:
+      - /tmp:uid=10001,gid=10001,mode=1770
+
+  caddy:
+    image: caddy:2.10.2-alpine
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+      - jwt
+      - livekit
+    read_only: true
+    cap_drop: ["ALL"]
+    cap_add: ["NET_BIND_SERVICE"]
+    group_add: ["10001"]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    volumes:
+      - type: bind
+        source: ./Caddyfile
+        target: /etc/caddy/Caddyfile
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: Z
+      - type: bind
+        source: ./secrets
+        target: /run/rtc-secrets
+        read_only: true
+        bind:
+          create_host_path: false
+          selinux: z
+      - caddy-data:/data
+      - caddy-config:/config
+    tmpfs:
+      - /tmp
+
+volumes:
+  caddy-data:
+  caddy-config:

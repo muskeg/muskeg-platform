@@ -1,0 +1,22 @@
+{
+	admin off
+	auto_https off
+	servers {
+		protocols h1 h2
+	}
+}
+
+https://rtc.muskeg.dev {
+	tls /run/rtc-secrets/origin-cert.pem /run/rtc-secrets/origin-key.pem
+
+	handle_path /livekit/* {
+		reverse_proxy 127.0.0.1:7880
+	}
+	handle /livekit {
+		rewrite * /
+		reverse_proxy 127.0.0.1:7880
+	}
+	handle {
+		reverse_proxy 127.0.0.1:8081
+	}
+}
