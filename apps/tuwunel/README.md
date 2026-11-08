@@ -10,73 +10,71 @@ Version épinglée : **v1.9.4**. Références :
 [configuration](https://matrix-construct.github.io/tuwunel/configuration.html).
 Les fonctionnalités annoncées ne remplacent pas les tests avec les clients réels.
 
-## Remplacement de Dendrite
-
-Il s'agit d'une **réinstallation de test**, pas d'une conversion de base.
-Les comptes, appareils et salons Dendrite ne sont pas importés. Déconnecter les
-anciens clients, recréer les comptes et repartir sur de nouveaux salons.
-Ne pas tenter de récupérer les anciennes sessions ou sauvegardes de chiffrement
-dans cette nouvelle base.
-
-Le même nom de serveur est conservé parce que les données de test sont jetables.
-Si des salons fédérés existent déjà, les serveurs distants peuvent conserver
-l'ancienne identité et les anciens événements : ne pas tenter de réutiliser ces
-salons. Pour une migration de production, préférer un nouveau nom de serveur ou
-un plan de migration explicite.
+## Déploiement
 
 L'application Argo CD, le namespace, le deployment, le service et l'Ingress
 s'appellent **`tuwunel`**. Le DNS, le tunnel, Traefik et le certificat wildcard
-restent inchangés.
+existants servent `matrix.muskeg.dev`. Un enregistrement DNS proxifié doit
+pointer vers le tunnel ; les API Matrix ne doivent pas être protégées par
+Cloudflare Access ou des challenges interactifs.
 
-Après publication sur `main`, l'application root supprime l'ancienne application
-`dendrite` et crée `tuwunel`. Le finalizer de l'ancienne application supprime ses
-deployments, services, Ingress et secrets gérés. Les PVC `dendrite-data` et
-`postgres-data` restent dans le namespace `dendrite` grâce à `Delete=false` ;
-ne pas supprimer ce namespace. Le nouveau PVC **`tuwunel-data`**, dans le
-namespace `tuwunel`, est indépendant.
-
-Les deux applications se réconcilient indépendamment : une interruption ou
-un chevauchement temporaire des routes est possible pendant la bascule.
-Attendre la disparition de l'ancienne application et de son Ingress avant de
-créer les nouveaux comptes :
-
-```sh
-kubectl -n argocd wait --for=delete application/dendrite --timeout=10m
-kubectl -n dendrite get ingress
-kubectl -n tuwunel rollout status deployment/tuwunel --timeout=10m
-```
-
-Pour revenir en arrière avant de commencer à utiliser Tuwunel, retirer
-l'application Tuwunel du dépôt et restaurer l'ancien manifeste d'application
-Dendrite avec le chemin `apps/dendrite` et le namespace `dendrite`, puis
-republier. Les anciennes données et l'élément 1Password doivent rester présents.
-Les nouvelles données Tuwunel ne seront pas lisibles par Dendrite.
+Créer le secret 1Password et préparer le stockage avant de publier sur `main`.
+L'application root Argo CD découvre automatiquement
+[l'application Tuwunel](../../clusters/homelab/apps/tuwunel.yaml).
 
 ## Secrets et stockage
 
 Créer un élément **`tuwunel`** dans le coffre 1Password **`muskeg-platform`**
 avec le champ **`registration-shared-secret`**, contenant un secret aléatoire
-fort (par exemple `openssl rand -hex 32`). Il est possible de copier la valeur
-existante depuis l'élément Dendrite. Créer cet élément avant la synchronisation
+fort (par exemple `openssl rand -hex 32`). Créer cet élément avant la synchronisation
 Argo CD : External Secrets lit `tuwunel/registration-shared-secret`.
 
-L'ancien élément `dendrite` est indépendant et ne sert plus qu'à un éventuel
-retour arrière ; ne pas le renommer si cette possibilité doit être conservée.
 Les champs `signing-key` et `postgres-password` ne sont pas nécessaires dans
 l'élément Tuwunel. Le ClusterSecretStore Kubernetes `onepassword` reste partagé
 entre les applications et ne change pas.
 
 **Tuwunel génère sa propre clé de signature dans sa base** au premier démarrage.
-Ne pas importer le PEM Dendrite, ne pas réinitialiser le volume après mise en
+Ne pas importer une clé externe, ne pas réinitialiser le volume après mise en
 service, et sauvegarder l'ensemble du volume.
 
 Le PVC utilise `local-path` et les volumes utilisateurs Talos existants ; aucune
 nouvelle modification Proxmox/Talos n'est nécessaire. Pour un nouveau cluster,
-suivre les [prérequis de stockage](../dendrite/README.md#stockage-et-sauvegardes).
+suivre les [prérequis de stockage](#prérequis-de-stockage).
 Un seul pod utilise le volume, avec la stratégie `Recreate`. Le volume est lié
 au node et n'est pas répliqué. Les 20 Gi déclarés ne sont pas un quota effectif :
-surveiller l'espace disponible, y compris celui occupé par les anciens PVC.
+surveiller l'espace disponible.
 La StorageClass utilise `Retain` et le PVC est protégé par `Prune=false,Delete=false`.
+
+### Prérequis de stockage
+
+Rancher local-path utilise `/var/mnt/local-path-provisioner`, un volume
+utilisateur Talos dédié. Chaque VM `shokunin1`, `shokunin2` et `shokunin3` doit
+avoir un disque virtuel vierge de 50 GiB en plus du disque système.
+Le [patch Talos](../../talos/patches/local-storage.yaml) sélectionne un disque
+non système, provisionne au moins 40 GiB et peut grandir dans l'espace disponible.
+Il est inclus dans les configurations générées par le bootstrap.
+
+Pour des nodes existants, vérifier qu'un seul disque non système vierge est
+éligible par VM, puis appliquer uniquement le patch :
+
+```sh
+talosctl --talosconfig _out/talosconfig \
+  --nodes 192.168.1.41,192.168.1.42,192.168.1.43 get disks
+talosctl --talosconfig _out/talosconfig \
+  --nodes 192.168.1.41,192.168.1.42,192.168.1.43 \
+  patch mc --patch @talos/patches/local-storage.yaml
+talosctl --talosconfig _out/talosconfig \
+  --nodes 192.168.1.41,192.168.1.42,192.168.1.43 \
+  get volumestatus u-local-path-provisioner
+talosctl --talosconfig _out/talosconfig \
+  --nodes 192.168.1.41,192.168.1.42,192.168.1.43 \
+  get mountstatus u-local-path-provisioner
+```
+
+Attendre que les volumes soient `ready` et montés. Sans eux, `/var/mnt` est
+en lecture seule pour kubelet et les helper pods échouent avec `FailedMount`.
+Ces helper pods utilisent des montages hostPath dans le namespace dédié
+`local-path-storage`, autorisés par la politique de sécurité `privileged`.
 
 ## Premier administrateur
 
