@@ -1,0 +1,9 @@
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: local-path-provisioner
+provisioning:
+  diskSelector:
+    # Un seul disque de donnees par VM ; ne jamais utiliser le disque systeme.
+    match: "!system_disk"
+  minSize: 40GiB
+  grow: true
