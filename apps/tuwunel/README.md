@@ -126,8 +126,11 @@ connexion dans Element X, un message chiffré, un téléversement de média, un
 second appareil et un nouveau salon fédéré. Tester également FluffyChat et
 le troisième client souhaité : leur compatibilité exacte dépend des versions.
 
-Le support protocolaire MatrixRTC ne fournit pas à lui seul un service d'appels :
-aucun TURN, LiveKit/SFU, service JWT ou interface Element Web n'est déployé ici.
+Le support protocolaire MatrixRTC ne fournit pas à lui seul un service d'appels.
+La [stack VPS MatrixRTC](../../vps/matrix-rtc/README.md) fournit LiveKit, le
+service JWT et TURN/UDP ; la déployer et la valider avant d'activer `livekit_url`
+dans la configuration Tuwunel. Elle n'est pas gérée par Argo CD.
+Aucune interface Element Web n'est déployée ici.
 L'authentification reste par mot de passe ; MAS/OIDC n'est pas configuré.
 
 ## Maintenance et sauvegardes
