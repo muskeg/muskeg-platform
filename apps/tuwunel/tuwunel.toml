@@ -16,5 +16,4 @@ error_on_unknown_config_opts = true
 [global.well_known]
 client = "https://matrix.muskeg.dev"
 server = "matrix.muskeg.dev:443"
-# Activer après validation de la stack VPS vps/matrix-rtc.
-#livekit_url = "https://rtc.muskeg.dev"
+livekit_url = "https://rtc.muskeg.dev"
