@@ -106,6 +106,25 @@ Ne pas désactiver SELinux ; si un montage est refusé, consulter les AVC.
 
 ## Déploiement et validation
 
+Vérifier que TCP 443 est libre avant de démarrer Caddy :
+
+```sh
+sudo ss -ltnp '( sport = :443 )'
+```
+
+Un ancien Nginx peut encore occuper ce port. S'il est confirmé obsolète et
+géré par systemd, le désactiver sans supprimer ses fichiers de configuration :
+
+```sh
+sudo systemctl disable --now nginx
+```
+
+Si le listener appartient à un conteneur ou à un autre service, identifier
+son gestionnaire avant de l'arrêter. Ne pas interrompre un proxy encore utilisé.
+Une erreur Caddy `bind: address already in use` signifie que la stack ne sert
+pas HTTPS, même si le healthcheck JWT local réussit. Des réponses publiques
+301 vers leur propre URL ne valident pas la stack.
+
 ```sh
 docker compose config --quiet
 docker compose pull
