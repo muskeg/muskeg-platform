@@ -120,6 +120,9 @@ curl -fsS https://matrix.muskeg.dev/_matrix/federation/v1/version
 ```
 
 Les versions doivent annoncer `org.matrix.simplified_msc3575: true`.
+Le pod désactive `enableServiceLinks` : sinon Kubernetes injecte une variable
+`TUWUNEL_PORT=tcp://…` pour le service du même nom, qui entre en conflit avec
+la configuration Tuwunel. La résolution DNS des services reste disponible.
 La découverte serveur doit indiquer `matrix.muskeg.dev:443`. Tester une
 connexion dans Element X, un message chiffré, un téléversement de média, un
 second appareil et un nouveau salon fédéré. Tester également FluffyChat et

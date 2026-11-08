@@ -15,6 +15,8 @@ spec:
         app: tuwunel
     spec:
       automountServiceAccountToken: false
+      # Éviter TUWUNEL_PORT injecté par le Service, interprété comme configuration.
+      enableServiceLinks: false
       # Laisser les migrations atteindre un point sûr avant l'arrêt.
       terminationGracePeriodSeconds: 1800
       securityContext:
