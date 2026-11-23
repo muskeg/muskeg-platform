@@ -8,9 +8,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/muskeg/muskeg-platform.git
+    repoURL: https://github.com/muskeg/homelab-apps.git
     targetRevision: main
-    path: apps/tuwunel
+    path: workloads/tuwunel
   destination:
     server: https://kubernetes.default.svc
     namespace: tuwunel
