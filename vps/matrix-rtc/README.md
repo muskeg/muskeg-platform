@@ -150,17 +150,18 @@ Une requête non authentifiée sous `/livekit/rtc/validate` doit atteindre
 LiveKit et retourner HTTP 401 faute de jeton, pas une erreur Cloudflare 52x.
 La santé HTTP seule ne valide pas les médias UDP.
 
-## Activation dans Tuwunel
+## Activation dans le homeserver privé
 
 **Déployer et vérifier le VPS avant d'activer la découverte dans le homelab.**
-Dans [tuwunel.toml](../../apps/tuwunel/tuwunel.toml), sous `[global.well_known]`,
-décommenter :
+Dans la configuration privée du homeserver, sous `[global.well_known]`,
+activer :
 
 ```toml
 livekit_url = "https://rtc.muskeg.dev"
 ```
 
-Publier sur `main` ; Argo CD redémarre Tuwunel via le hash du ConfigMap.
+Publier le changement dans le dépôt GitOps privé ; Argo CD synchronise le
+homeserver.
 Puis vérifier les deux surfaces de découverte :
 
 ```sh
