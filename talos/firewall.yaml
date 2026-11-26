@@ -54,6 +54,16 @@ portSelector:
 ingress:
   - subnet: 192.168.1.40/30
 ---
+# Les nœuds Calico rejoignent Typha, qui relaye la configuration des politiques.
+apiVersion: v1alpha1
+kind: NetworkRuleConfig
+name: calico-typha
+portSelector:
+  ports: [5473]
+  protocol: tcp
+ingress:
+  - subnet: 192.168.1.40/30
+---
 # CoreDNS transfère vers le DNS de l'hôte Talos (169.254.116.108)
 apiVersion: v1alpha1
 kind: NetworkRuleConfig

@@ -7,12 +7,15 @@ metadata:
     argocd.argoproj.io/sync-wave: "-10"
 spec:
   project: default
-  source:
-    repoURL: https://github.com/projectcalico/calico.git
-    targetRevision: v3.33.0
-    path: manifests
-    directory:
-      include: calico-policy-only.yaml
+  sources:
+    - repoURL: https://github.com/projectcalico/calico.git
+      targetRevision: v3.33.0
+      path: manifests
+      directory:
+        include: calico-policy-only.yaml
+    - repoURL: https://github.com/muskeg/muskeg-platform.git
+      targetRevision: main
+      path: platform/calico
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
